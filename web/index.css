@@ -1,0 +1,49 @@
+.total{
+    border-radius: 10px;
+    border: 1px solid #4e72b8;
+    background: #cde6c7;
+    position: relative;
+    margin:0 0 100px;
+}
+main{
+  margin:40px;
+}
+
+.p-rem{
+  margin: 0 0 1rem 0;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(12, minmax(0px, 1fr));
+  grid-column-gap: 1.5rem;
+  grid-row-gap: 1.5rem;
+  text-align: center;
+  font-size:2.2rem;
+}
+
+.col-3{
+  grid-column: span 4;
+}
+
+.col-1{
+  grid-column: span 12;
+}
+
+.detail{
+  font-size: 3rem;
+  position: absolute;
+  right:20px;
+  top:20px;
+}
+
+.China{
+  font-size: 3rem;
+  position: absolute;
+  left:20px;
+  top:20px;
+}
+
+.html{
+  grid-column: span 12;
+}

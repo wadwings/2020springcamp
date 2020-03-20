@@ -130,7 +130,7 @@ class Predict:
         df = pd.read_csv(R'./src/confirmed.csv', header=None)
         world_data = dict()
 
-        for i in range(2, df.shape[1]):
+        for i in range(1, df.shape[1]):
             country = df[i][0]
             data = list(df[i].dropna()[1:].astype(int))
             world_data[country] = data
@@ -146,7 +146,7 @@ class Predict:
         df = pd.read_csv(R'./src/deaths.csv', header=None)
         world_data = dict()
 
-        for i in range(2, df.shape[1]):
+        for i in range(1, df.shape[1]):
             country = df[i][0]
             data = list(df[i].dropna()[1:].astype(int))
             world_data[country] = data

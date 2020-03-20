@@ -7,12 +7,13 @@ import numpy as np
 from pyecharts import Map
 import pandas as pd
 import datetime as dt
+from collections import OrderedDict
 import matplotlib.dates as mdates
 from urllib import request
 from os import remove, listdir
 
-filename = R'./src/world_confirmed_data.json'
-url = R'https://covid.ourworldindata.org/data/total_cases.csv'
+url1 = R'https://covid.ourworldindata.org/data/total_cases.csv'
+url2 = R'https://covid.ourworldindata.org/data/total_deaths.csv'
 font = fm.FontProperties(fname=R'./src/SIMHEI.TTF')
 
 lookback = 4
@@ -39,14 +40,16 @@ class Predict:
         plt.title(country+"'s confirmed cases")
         plt.legend(prop=font, fancybox=True, shadow=True)
         plt.gcf().autofmt_xdate()
-        plt.savefig(R'./daily_data/images/ '[:-1]+country+'.png')
+        plt.savefig(
+            R'/home/wwwroot/map.dedsec.site/daily_data/images/ '[:-1]+country+'.png')
 
-    def daily_update(self, filename=filename):
+    def daily_update(self):
         self._load_model()
-        world_data_dict = self._load_data(filename)
-        self._creat_map(world_data_dict)
+        world_confirmed_dict = self._load_data(
+            R'/home/wwwroot/map.dedsec.site/daily_data/world_confirmed_data.json')
+        self._creat_map(world_confirmed_dict)
         pred_data = dict()
-        for country, num_list in world_data_dict.items():
+        for country, num_list in world_confirmed_dict.items():
             if len(num_list) < lookback + 1:
                 num_list = [0] * (lookback + 1 - len(num_list)) + num_list
 
@@ -57,7 +60,21 @@ class Predict:
             if num_list[-1] > 5000:
                 self._plot_curve(country, num_list+[pred_num])
 
-        with open(R'./daily_data/predict_data.json', 'w') as f:
+        with open(R'/home/wwwroot/map.dedsec.site/daily_data/predict_confirmed.json', 'w') as f:
+            f.write(json.dumps(pred_data, ensure_ascii=False, indent=4))
+
+        world_deaths_dict = self._load_data(
+            R'/home/wwwroot/map.dedsec.site/daily_data/world_deaths_data.json')
+        pred_data = dict()
+        for country, num_list in world_deaths_dict.items():
+            if len(num_list) < lookback + 1:
+                num_list = [0] * (lookback + 1 - len(num_list)) + num_list
+
+            pred_num = self._predict(num_list)
+
+            pred_data[country] = pred_num
+
+        with open(R'/home/wwwroot/map.dedsec.site/daily_data/predict_deaths.json', 'w') as f:
             f.write(json.dumps(pred_data, ensure_ascii=False, indent=4))
 
     def _creat_map(self, world_data_dict):
@@ -85,7 +102,7 @@ class Predict:
                     {"max": 99999999, "min": 10000, "label": "10000+"},
             ]
         )
-        map.render(R'./daily_data/world_map.html')
+        map.render(R'/home/wwwroot/map.dedsec.site/daily_data/world_map.html')
 
     def _load_data(self, filename):
         with open(filename) as fr:
@@ -100,62 +117,78 @@ class Predict:
         return world_data_dict
 
     def clean(self):
-        paths = [R"./daily_data/images/ "[:-1]+x
-                     for x in listdir(R'./daily_data/images')]
+        paths = [R"/home/wwwroot/map.dedsec.site/daily_data/images/ "[:-1]+x
+                 for x in listdir(R'/home/wwwroot/map.dedsec.site/daily_data/images')]
         for path in paths:
             remove(path)
 
     def download(self):
-        request.urlretrieve(url, filename=R'./src/world_data.csv')
+        request.urlretrieve(url1, filename=R'./src/confirmed.csv')
+        request.urlretrieve(url2, filename=R'./src/deaths.csv')
 
     def preprocess(self):
-        df=pd.read_csv(R'./src/world_data.csv', header=None)
+        df = pd.read_csv(R'./src/confirmed.csv', header=None)
+        world_data = dict()
 
-        world_data=dict()
+        for i in range(1, df.shape[1]):
+            country = df[i][0]
+            data = list(df[i].dropna()[1:].astype(int))
+            world_data[country] = data
 
-        for i in range(2, df.shape[1]):
-            country=df[i][0]
-            data=list(df[i].dropna()[1:].astype(int))
-            world_data[country]=data
+        world_data = OrderedDict(world_data)
+        world_data = sorted(world_data.items(),
+                            key=lambda x: x[1][-1], reverse=True)
+        world_data = dict(world_data)
 
-        with open(R'./src/world_confirmed_data.json', 'w') as f:
+        with open(R'/home/wwwroot/map.dedsec.site/daily_data/world_confirmed_data.json', 'w') as f:
+            f.write(json.dumps(world_data, ensure_ascii=False, indent=4))
+
+        df = pd.read_csv(R'./src/deaths.csv', header=None)
+        world_data = dict()
+
+        for i in range(1, df.shape[1]):
+            country = df[i][0]
+            data = list(df[i].dropna()[1:].astype(int))
+            world_data[country] = data
+
+        with open(R'/home/wwwroot/map.dedsec.site/daily_data/world_deaths_data.json', 'w') as f:
             f.write(json.dumps(world_data, ensure_ascii=False, indent=4))
 
     def _load_model(self):
-        svr_3=SVR(kernel='poly', C=50, gamma='auto', degree=3, epsilon=.1,
+        svr_3 = SVR(kernel='poly', C=50, gamma='auto', degree=3, epsilon=.1,
                     coef0=1)
-        svr_2=SVR(kernel='poly', C=50, gamma='auto', degree=2, epsilon=.1,
+        svr_2 = SVR(kernel='poly', C=50, gamma='auto', degree=2, epsilon=.1,
                     coef0=1)
-        svr_1=SVR(kernel='linear', C=50, gamma='auto')
-        self.models=[svr_3, svr_2, svr_1]
-        self.x=np.array(range(1, 6)).reshape(-1, 1)
-        self.pred=np.array([6]).reshape(1, -1)
+        svr_1 = SVR(kernel='linear', C=50, gamma='auto')
+        self.models = [svr_3, svr_2, svr_1]
+        self.x = np.array(range(1, 6)).reshape(-1, 1)
+        self.pred = np.array([6]).reshape(1, -1)
 
     def _predict(self, data_list):
-        data_array=np.array(data_list[-5:]).reshape(-1, 1)
-        predicts=[]
+        data_array = np.array(data_list[-5:]).reshape(-1, 1)
+        predicts = []
         for svr in self.models:
-            y_pred=svr.fit(self.x, data_array).predict(self.pred)
+            y_pred = svr.fit(self.x, data_array).predict(self.pred)
             predicts.append(y_pred)
-        pred_num=sorted(predicts)[1]
-        pred_num=int(max(pred_num, data_list[-1]))
+        pred_num = sorted(predicts)[1]
+        pred_num = int(max(pred_num, data_list[-1]))
         return pred_num
 
 
 log_path = R'./src/log.txt'
 
-p=Predict()
-with open(log_path,'a') as f:
+p = Predict()
+with open(log_path, 'a') as f:
     f.write(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S\n'))
 p.clean()
-with open(log_path,'a') as f:
+with open(log_path, 'a') as f:
     f.write('cleaned\n')
 p.download()
-with open(log_path,'a') as f:
+with open(log_path, 'a') as f:
     f.write('download\n')
 p.preprocess()
-with open(log_path,'a') as f:
+with open(log_path, 'a') as f:
     f.write('convert csv to json\n')
 p.daily_update()
-with open(log_path,'a') as f:
+with open(log_path, 'a') as f:
     f.write('updated\n')

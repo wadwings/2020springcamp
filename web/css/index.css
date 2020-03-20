@@ -70,7 +70,11 @@ body{
   justify-content: space-between;
   margin: 30px;
   padding: 0 30px 10px 30px;
-  border-bottom: 3px solid #d3d7d4;
+  border-bottom: 1px solid #d3d7d4;
+}
+
+.flex_title{
+  border-bottom: 3px solid #d3d7d4!important;
 }
 
 .flex p{

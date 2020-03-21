@@ -132,7 +132,7 @@ class Predict:
         for i in range(1, df.shape[1]):
             country = df[i][0]
             data = list(df[i].dropna()[1:].astype(int))
-            world_data[country.replace(' ','_')] = data
+            world_data[str(country).replace(' ','_')] = data
 
         world_data = sorted(world_data.items(),
                             key=lambda x: x[1][-1], reverse=True)
@@ -147,7 +147,7 @@ class Predict:
         for i in range(1, df.shape[1]):
             country = df[i][0]
             data = list(df[i].dropna()[1:].astype(int))
-            world_data[country.replace(' ','_')] = data
+            world_data[str(country).replace(' ','_')] = data
 
         with open(R'/home/wwwroot/map.dedsec.site/daily_data/world_deaths_data.json', 'w') as f:
             f.write(json.dumps(world_data, ensure_ascii=False, indent=4))

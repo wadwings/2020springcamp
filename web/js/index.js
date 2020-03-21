@@ -2,14 +2,14 @@ window.onload = function () {
     init();
 }
 
-w_conf = $.getJSON("daily_data/world_confirmed_data.json",function(status){
-    console.log(status);
-});
-w_death = $.getJSON("daily_data/world_deaths_data.json",function(status){
-    console.log(status);
-});
-
 function init(){
+    $.ajaxSettings.async = false;
+    w_conf = $.getJSON("daily_data/world_confirmed_data.json",function(status){
+        console.log(status);
+    });
+    w_death = $.getJSON("daily_data/world_deaths_data.json",function(status){
+        console.log(status);
+    });    
     for(key in w_conf.responseJSON){
         var name = key;
         var conf = w_conf.responseJSON[key][w_conf.responseJSON[key].length - 1];

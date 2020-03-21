@@ -31,7 +31,9 @@ body{
 .col-1{
   grid-column: span 12;
 }
-
+.weigh{
+  font-weight: 1000;
+}
 .detail{
   font-size: 3rem;
   position: absolute;

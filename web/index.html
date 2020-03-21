@@ -3,40 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>2019-nCov</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="js/index.js"></script>
     <link rel="stylesheet" href="css/index.css">
-    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 </head>
 <body>
     <main>
         <div class="total grid">
                 <div class="col-3 China">中国</div>
-                <div class="col-1">肺炎疫情实时动态<br>数据统计截止到<br>xxxx-xx-xx xx:xx</div>
-                <div class="col-3 detail">详情>></div>
-                <div class="col-3">确诊</div>
-                <div class="col-3">治愈</div>
-                <div class="col-3">死亡</div>
-                <div class="col-3">xx</div>
-                <div class="col-3">xxxx</div>
-                <div class="col-3">xx</div>
-                <div class="col-3">xx</div>
-                <div class="col-3">xxxx</div>
-                <div class="col-3">xx</div>
+                <div class="col-1" id="time">肺炎疫情实时动态<br>数据统计截止到<br></div>
+                <div class="col-2">确诊</div>
+                <div class="col-2">死亡</div>
+                <div class="col-2 weigh" id="q1"></div>
+                <div class="col-2 weigh" id="q2"></div>
+                <div class="col-2 weigh" id="q3">&#8593</div>
+                <div class="col-2 weigh" id="q4">&#8593</div>
         </div>
         <div class="total">
             <div class="grid">
             <div class="col-3 China">世界</div>
             <div class="col-1"><br><br></div>
-            <div class="col-3 detail">详情>></div>
-            <div class="col-3">确诊</div>
-            <div class="col-3">治愈</div>   
-            <div class="col-3">死亡</div>
-            <div class="col-3">xx</div>
-            <div class="col-3">xxxx</div>
-            <div class="col-3">xx</div>
-            <div class="col-3">xx</div>
-            <div class="col-3">xxxx</div>
-            <div class="col-3">xx</div>
+            <div class="col-3 detail" onclick="world()">详情>></div>
+            <div class="col-2">确诊</div>
+            <div class="col-2">死亡</div>
+            <div class="col-2 weigh" id="w1"></div>
+            <div class="col-2 weigh" id="w2"></div>
+            <div class="col-2 weigh" id="w3">&#8593</div>
+            <div class="col-2 weigh" id="w4">&#8593</div>
             </div>
             <html class="html">
             <head>
@@ -861,18 +854,8 @@
         </div>
     </main>
     <div class="world">
-        <p class="world_title">新冠病毒</p>
+        <p class="world_title" onclick="world()">新冠病毒 <</p>
         <div class="flex flex_title">
-            <p>国家</p>
-            <p>确诊</p>
-            <p>死亡</p>
-        </div>
-        <div class="flex">
-            <p>国家</p>
-            <p>确诊</p>
-            <p>死亡</p>
-        </div>
-        <div class="flex">
             <p>国家</p>
             <p>确诊</p>
             <p>死亡</p>
